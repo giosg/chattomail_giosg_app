@@ -1,0 +1,208 @@
+<html lang="en">
+<head>
+<title>
+giosg &raquo; 
+</title>
+</head>
+<body >
+    <table width="100%" height="100%" bgcolor="#E0EBEB"><tr><td>
+
+        <table border="0" align="center" cellspacing="0" cellpadding="0" style="width: 590px; color: #11b5b7;">
+            <tr>
+                <td colspan="2" style="display: block; float: left; padding-top: 35px; padding-left: 20px; color: #00b4b1; font-weight: bold; font-size: 26px; font-family: Arial, sans-serif;">
+                    New chat conversation
+                    <a href="http://giosg.com" target="_blank"><img src="https://service.giosg.com/static/common/images/giosg_transparent_logo.png" align="right"></a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img style="display: block;line-height: 50%; width:100%" src="https://service.giosg.com/static/customer/images/email/top_bg.png">
+                </td>
+                <td>&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td bgcolor="#FFFFFF" style="color: #555555; font-family: Arial, Helvetica, sans-serif; font-size:11px; padding-left: 10px; padding-right: 10px;">
+
+                
+
+    
+    <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; color: #555555; margin: 0;">
+        <tr style="background-color: #EFEFEF;"> <th style="border-radius: 2px; font: bold; font-family: Arial, Helvetica, sans-serif; font-size: 20px; color: #606060; text-align: left; padding: 10px;"> {{convert_timezone(data['start_time'])}} </th> </tr>
+            <tr>
+                <td>
+                    <br>
+                    <table align="center" style="color: #555555; width:99.5%; border: 1px solid #D0D0D0; border-radius: 2px;">
+
+                        <tr style="background-color: #EFEFEF;">
+                            <th style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, sans-serif; font-size:14px; color: #555555; padding: 5px; width: 50%">Chat conversation</th>
+                        </tr>
+
+                        {% if data %}
+{% for msg in data['logs'] %}
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+  {% if msg['sender_type'] == 1 %}
+    <b>{{ msg['visibleName'] }}:</b>
+  {% else %}
+    <b>Visitor:</b>
+  {% endif %}
+  {{msg['msg']}}
+  </td>
+  </tr>
+{% endfor %}
+{% endif %}
+
+                       
+                        
+                    </table>
+                </td>
+            </tr>
+      
+
+
+
+            <tr>
+                <td>
+                    <br />
+                    <table align="center" style="color: #555555; width:99.5%; border: 1px solid #D0D0D0; border-radius: 2px;">
+
+                        <tr style="background-color: #EFEFEF;">
+                            <th style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, sans-serif; font-size:14px; color: #555555; padding: 5px; width: 50%">Info</th>
+                        </tr>
+
+                        {% if data %}
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+    <b>Start time:</b>
+    {{convert_timezone(data['start_time'])}}
+  </td>
+  </tr>
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+    <b>End time:</b>
+    {{convert_timezone(data['end_time'])}}
+  </td>
+  </tr>
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+    <b>Start url:</b>
+    {{data['start_url']}}
+  </td>
+  </tr>
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+    <b>Autosuggest url:</b>
+    {% if data['autosuggest_url'] %}
+        {{data['autosuggest_url']}}
+    {% else %}
+        -
+    {% endif %}
+  </td>
+  </tr>
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+    <b>Chat gid:</b>
+    {{data['chat_room_gid']}}
+  </td>
+  </tr>
+  
+
+{% endif %}
+
+                       
+                        
+                    </table>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <br />
+                    <table align="center" style="color: #555555; width:99.5%; border: 1px solid #D0D0D0; border-radius: 2px;">
+
+                        <tr style="background-color: #EFEFEF;">
+                            <th style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, sans-serif; font-size:14px; color: #555555; padding: 5px; width: 50%">Tags</th>
+                        </tr>
+
+                        {% if data %}
+{% for tag in data['tags'] %}
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+    {{ tag['name'] }}
+  </td>
+{% endfor %}
+{% endif %}
+
+                       
+                        
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <br />
+                    <table align="center" style="color: #555555; width:99.5%; border: 1px solid #D0D0D0; border-radius: 2px;">
+
+                        <tr style="background-color: #EFEFEF;">
+                            <th style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, sans-serif; font-size:14px; color: #555555; padding: 5px; width: 50%">Api-data</th>
+                        </tr>
+
+                        {% if data %}
+{% for api_data in data['api_data'] %}
+  <tr>
+  <td style="padding:0 20px; font-size:14px;">
+    <b>{{ api_data['name'] }}:</b>
+    {{ api_data['value'] }}
+  </td>
+  </tr>
+{% endfor %}
+{% endif %}
+
+                       
+                        
+                    </table>
+                </td>
+            </tr>
+
+
+      
+    </table>
+    <br />
+
+  <br />
+  <table align="center" style="font-family: Arial, Helvetica, sans-serif;font-size:11px;">
+  <tr>
+  <td><a href="https://service.giosg.com/en/customer/login/">LOGIN</a>
+  </td>
+  </tr>
+  </table>
+  <br />
+  Kind Regards,<br />
+  Customer Service,<br />
+  <a href="http://www.giosg.com">giosg.com</a>
+
+  <br /><br /><br />
+
+
+
+                  
+
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img style="display: block;line-height: 50%; width:100%" src="https://service.giosg.com/static/customer/images/email/bottom_bg.png">
+                </td>
+                <td>&nbsp;
+                </td>
+            </tr>
+        </table>
+
+</td></tr></table>
+  </body>
+</html>
+
