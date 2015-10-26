@@ -7,4 +7,6 @@ MAIL_USERNAME = "example.example.com"
 MAIL_PASSWORD = "mypassword to smtp server"
 
 # app settings
-MAIL_RECEIVERS = ['example_receiver@example.com']
+MAIL_RECEIVERS = ['some_receiver@example.com']
+API_HOST = "https://service.giosg.com"
+API_TOKEN = "token_to_my_giosg_account"

@@ -6,12 +6,20 @@ from flask import json
 from flask.ext.mail import Mail
 from flask.ext.mail import Message
 
+# Urllib3 import is for openshift environment. If you have decently new 2.7.x python,
+# these are not needed and you can comment them.
+# (https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning)
+import urllib3.contrib.pyopenssl
+urllib3.contrib.pyopenssl.inject_into_urllib3()
+
 import requests
 from datetime import datetime
 from dateutil import tz
 
 app = Flask(__name__)
-app.config.from_envvar('APP_SETTINGS')
+# app.config.from_envvar('APP_SETTINGS')
+app.config.from_pyfile('config.cfg')
+app.debug = True
 mail = Mail(app)
 
 
@@ -37,7 +45,7 @@ def call_api(token, url, payload):
 
 
 def get_room(token, room_id):
-    api_url = "http://localhost:8000/api/v5/rooms/" + room_id
+    api_url = app.config.get('API_HOST') + "/api/v5/rooms/" + room_id
     response = call_api(token, api_url, {})
     room_data = json.loads(response.text)
 
@@ -45,7 +53,7 @@ def get_room(token, room_id):
 
 
 def get_chat(token, chat_id):
-    api_url = "http://localhost:8000/api/v3/chat/chatsessions"
+    api_url = app.config.get('API_HOST') + "/api/v3/chat/chatsessions"
     response = call_api(token, api_url, {
         'since_id': chat_id,
         'page_size': 1
@@ -68,20 +76,19 @@ def utility_processor():
 
 @app.route('/')
 def chattomail():
-    api_token = '323e56fcdcc8b08c7a9a0dad5e9bff4c6dd68ed0'
     user = request.args.get('user')
     chat_id = request.args.get('chat')
     token = request.args.get('token')
     launch_type = request.args.get('type')
 
     if launch_type == 'chat_end':
-        data = get_chat(api_token, chat_id)
+        data = get_chat(app.config.get('API_TOKEN'), chat_id)
 
         # check that we got conversation trough API
         if data['count'] < 1:
             abort(404)
 
-        if data['results'][0]['real_conversation'] == False:
+        if data['results'][0]['real_conversation'] is False:
             return render_template('ok.html')
 
         chat_data = data['results'][0]
