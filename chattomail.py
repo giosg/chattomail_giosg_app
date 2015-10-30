@@ -6,21 +6,28 @@ from flask import json
 from flask.ext.mail import Mail
 from flask.ext.mail import Message
 
-# Urllib3 import is for openshift environment. If you have decently new 2.7.x python,
-# these are not needed and you can comment them.
-# (https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning)
-import urllib3.contrib.pyopenssl
-urllib3.contrib.pyopenssl.inject_into_urllib3()
-
+import jwt
 import requests
 from datetime import datetime
 from dateutil import tz
+
+from forms import EmailSendForm
 
 app = Flask(__name__)
 # app.config.from_envvar('APP_SETTINGS')
 app.config.from_pyfile('config.cfg')
 app.debug = True
+app.secret_key = 'development key'
+
 mail = Mail(app)
+
+# Urllib3 import is for openshift environment. If you have decently new 2.7.x python,
+# these are not needed and you can comment them.
+# (https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning)
+if app.config.get('USE_OPENSSL'):
+    import urllib3.contrib.pyopenssl
+    urllib3.contrib.pyopenssl.inject_into_urllib3()
+
 
 
 def send_email(subject, sender, recipients, text_body, html_body):
@@ -74,6 +81,36 @@ def utility_processor():
     return dict(convert_timezone=convert_timezone)
 
 
+def handle_jwt(data):
+    return jwt.decode(data, app.config.get('APP_SECRET'))
+
+
+
+@app.route('/send_email', methods=['POST'])
+def send_email():
+    form = EmailSendForm()
+    jwt_data = handle_jwt(form.urldata.data)
+    print jwt_data
+    if request.method == 'POST':
+        data = get_chat(app.config.get('API_TOKEN'), jwt_data['chat_id'])
+        print data
+
+        # check that we got conversation trough API
+        if data['count'] != 1:
+            return 'Email sending failed (API error).'
+
+        if data['results'][0]['real_conversation'] is False:
+            return render_template('ok.html')
+
+        chat_data = data['results'][0]
+
+        send_email("New chat conversation", "noreply@giosg.com", form.email,
+            render_template("email.txt", data=chat_data),
+            render_template("email.html", data=chat_data))
+
+        #return 'Email posted.'
+
+
 @app.route('/')
 def chattomail():
     user = request.args.get('user')
@@ -81,8 +118,14 @@ def chattomail():
     token = request.args.get('token')
     launch_type = request.args.get('type')
 
-    if launch_type == 'chat_end':
-        data = get_chat(app.config.get('API_TOKEN'), chat_id)
+    jwt_data = handle_jwt(request.args.get('data'))
+
+    if launch_type == 'manual_dialog':
+        form = EmailSendForm()
+        form.urldata.data = request.args.get('data')
+        return render_template('manual_dialog.html', form=form)
+    elif launch_type == 'chat_end':
+        data = get_chat(app.config.get('API_TOKEN'), jwt_data['chat_id'])
 
         # check that we got conversation trough API
         if data['count'] < 1:
