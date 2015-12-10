@@ -118,6 +118,9 @@ def chattomail():
     token = request.args.get('token')
     launch_type = request.args.get('type')
 
+    if request.args.get('data') is None:
+        return render_template('welcome.html')
+
     jwt_data = handle_jwt(request.args.get('data'))
 
     if launch_type == 'manual_dialog':
